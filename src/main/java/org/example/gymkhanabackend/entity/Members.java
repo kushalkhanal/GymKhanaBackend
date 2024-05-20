@@ -20,25 +20,36 @@ public class Members {
     @SequenceGenerator(name="members_seq_gen",sequenceName="members_seq",allocationSize=1)
 
     @Id
-    private Integer id;
-    @Column(name="first_name" ,nullable=false, length=100)
-    private String firstName;
-    @Column(name="last_name" ,nullable=false, length=100)
-    private String lastName;
-    @Column(name="age" ,nullable=false, length=100)
-    private Integer age;
-    @Column(name="packages" ,nullable=false, length=100)
-    private String packages;
+    private Integer memberId;
+    @Column(name="name" ,nullable=false, length=100)
+    private String name;
+    @Column(name="email" ,nullable=false, length=100)
+    private String email;
     @Column(name="phone_number" ,nullable=false, length=100)
     private String phoneNumber;
-    @Column(name="joined_on" ,nullable=false, length=100)
-    private LocalDate joinedOn;
     @Column(name="address" ,nullable=false, length=100)
     private String address;
     @Column(name="date_of_birth" ,nullable=false, length=100)
     private LocalDate dateOfBirth;
     @Column(name="created_at" ,nullable=false, length=100)
     private LocalDateTime createdAt;
+    @Column(name="membership_Start_Date" ,nullable=false, length=100)
+    private LocalDate membershipStartDate;
+    @Column(name="membership_End_Date" ,nullable=false, length=100)
+    private LocalDate membershipEndDate;
+//    @Column(name="profile_img" ,nullable=true, length=100)
+//    private String profileImg;
+
+    //--Used to fetch the data from the membership
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "membership_type_id")
+//    @JsonManagedReference  // Added to break circular reference
+
+    private MembershipType membershipType;
+
+//    public MembershipTypePojo membershipTypePojo;
+
+
 
 
 
