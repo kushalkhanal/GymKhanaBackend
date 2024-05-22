@@ -14,6 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MembersImpl implements MembersService {
     private final MembersRepo membersRepo;
+
     @Override
     public void saveData(MembersPojo membersPojo) {
         Members members = new Members();
@@ -31,17 +32,41 @@ public class MembersImpl implements MembersService {
 
         membersRepo.save(members);
     }
+
     @Override
     public List<Members> getAll() {
         return membersRepo.findAll();
     }
+
     @Override
     public void deleteById(Integer id) {
         membersRepo.deleteById(Long.valueOf(id));
     }
+
     @Override
     public Optional<Members> findById(Integer id) {
         return membersRepo.findById(Long.valueOf(id));
+    }
+
+    public void update(Integer id, MembersPojo membersPojo) {
+        Optional<Members> optionalMembers = membersRepo.findById(Long.valueOf(id));
+
+        if (optionalMembers.isPresent()) {
+            Members existingMembers = optionalMembers.get();
+
+            existingMembers.setName(membersPojo.getName());
+            existingMembers.setEmail(membersPojo.getEmail());
+            existingMembers.setDateOfBirth(membersPojo.getDateOfBirth());
+            existingMembers.setPhoneNumber(membersPojo.getPhoneNumber());
+            existingMembers.setAddress(membersPojo.getAddress());
+            existingMembers.setMembershipStartDate(membersPojo.getMembershipStartDate());
+            existingMembers.setMembershipEndDate(membersPojo.getMembershipEndDate());
+            existingMembers.setMembershipType(membersPojo.getMembershipType());
+
+            membersRepo.save(existingMembers);
+
+        }
+
     }
 
 }

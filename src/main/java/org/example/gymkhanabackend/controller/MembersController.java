@@ -82,5 +82,29 @@ public class MembersController {
 
 
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<GlobalApiResponse<String>> updateData(@PathVariable("id") Integer id, @RequestBody MembersPojo membersPojo) {
+        Optional<Members> existingMember = membersService.findById(id);
+
+        if (existingMember.isPresent()) {
+            membersService.update(id, membersPojo);
+            return ResponseEntity.ok(
+                    GlobalApiResponse.<String>builder()
+                            .data("updated data")
+                            .statusCode(200)
+                            .message("Data updated successfully!")
+                            .build()
+            );
+        } else {
+            return ResponseEntity.status(404).body(
+                    GlobalApiResponse.<String>builder()
+                            .data("Members not found with id: " + id)
+                            .statusCode(404)
+                            .message("Update failed: Data not found")
+                            .build()
+            );
+        }
+    }
+
 
 }

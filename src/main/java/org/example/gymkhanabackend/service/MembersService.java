@@ -14,4 +14,7 @@ public interface MembersService {
 
     void deleteById(Integer id);
     Optional<Members> findById(Integer id);
+
+    void update(Integer id, MembersPojo membersPojo);
+
 }
