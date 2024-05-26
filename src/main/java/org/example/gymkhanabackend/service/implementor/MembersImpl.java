@@ -1,24 +1,34 @@
 package org.example.gymkhanabackend.service.implementor;
 
-import lombok.RequiredArgsConstructor;
+import org.example.gymkhanabackend.entity.Due;
 import org.example.gymkhanabackend.entity.Members;
 import org.example.gymkhanabackend.pojo.MembersPojo;
+import org.example.gymkhanabackend.repo.DueRepo;
 import org.example.gymkhanabackend.repo.MembersRepo;
 import org.example.gymkhanabackend.service.MembersService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+
 @Service
 @RequiredArgsConstructor
 public class MembersImpl implements MembersService {
     private final MembersRepo membersRepo;
-
+    @Autowired
+    private DueRepo dueRepository;
     @Override
     public void saveData(MembersPojo membersPojo) {
         Members members = new Members();
-        members.setMemberId(membersPojo.getMembersId());
+        members.setMemberId(membersPojo.getMemberId());
         members.setName(membersPojo.getName());
         members.setEmail(membersPojo.getEmail());
         members.setPhoneNumber(membersPojo.getPhoneNumber());
@@ -32,21 +42,14 @@ public class MembersImpl implements MembersService {
 
         membersRepo.save(members);
     }
-
     @Override
-    public List<Members> getAll() {
+    public List<Members>getAll() {
         return membersRepo.findAll();
     }
-
-    @Override
-    public void deleteById(Integer id) {
-        membersRepo.deleteById(Long.valueOf(id));
-    }
-
-    @Override
-    public Optional<Members> findById(Integer id) {
-        return membersRepo.findById(Long.valueOf(id));
-    }
+//    @Override
+//    public void deleteById(Integer id) {
+//        membersRepo.deleteById(Long.valueOf(id));
+//    }
 
     public void update(Integer id, MembersPojo membersPojo) {
         Optional<Members> optionalMembers = membersRepo.findById(Long.valueOf(id));
@@ -68,5 +71,67 @@ public class MembersImpl implements MembersService {
         }
 
     }
+    @Override
+    public Optional<Members> findById(Integer id) {
+        return membersRepo.findById(Long.valueOf(id));
+    }
+
+    @Override
+    public String getMembershipTypeName(Integer memberId) {
+        Optional<Members> optionalMembers = membersRepo.findById(Long.valueOf(memberId));
+        if (optionalMembers.isPresent()) {
+            Members members = optionalMembers.get();
+            return members.getMembershipType().getTypeName();
+        } else {
+            return "Member not found";
+        }
+    }
+    @Override
+    public Long countBasicMembers() {
+        return membersRepo.countByMembershipType_MembershipTypeId(1);
+    }
+
+    @Override
+    public Long countPremiumMembers() {
+        return membersRepo.countByMembershipType_MembershipTypeId(2);
+    }
+    public void copyMembersToDue() {
+        LocalDate today = LocalDate.now();
+        List<Members> membersWithDue = membersRepo.findByMembershipEndDateBefore(today);
+
+        for (Members member : membersWithDue) {
+            // Check if the member is already in the Due table
+            if (!dueRepository.existsByMemberId(member.getMemberId())) {
+                Due due = new Due();
+                due.setMemberId(member.getMemberId());
+                due.setName(member.getName());
+                due.setEmail(member.getEmail());
+                due.setPhoneNumber(member.getPhoneNumber());
+                due.setAddress(member.getAddress());
+                due.setDateOfBirth(member.getDateOfBirth());
+//                due.setCreatedAt(member.getCreatedAt());
+                due.setMembershipStartDate(member.getMembershipStartDate());
+                due.setMembershipEndDate(member.getMembershipEndDate());
+                due.setMembershipTypeId(member.getMembershipType().getMembershipTypeId());
+
+                dueRepository.save(due);
+            }
+        }
+    }
+
+
+
+    @Scheduled(initialDelay = 30000, fixedRate = 86400000) // 30 seconds initial delay, then repeat every 24 hours
+    public void scheduleCopyMembersToDue() {
+        copyMembersToDue();
+    }
+    @Transactional
+    @Override
+    public void deleteMemberAndDue(Integer memberId) {
+        dueRepository.deleteByMemberId(memberId);
+        membersRepo.deleteById(Long.valueOf(memberId));
+    }
+
+
 
 }

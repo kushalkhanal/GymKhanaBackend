@@ -70,18 +70,30 @@ public class MembersController {
         );
     }
 
-    @DeleteMapping ("/delete/{id}")
-    public GlobalApiResponse<String> delete(@Validated @PathVariable Integer id) {
-        this.membersService.deleteById(id);
+//    @DeleteMapping ("/delete/{id}")
+//    public GlobalApiResponse<String> delete(@Validated @PathVariable Integer id) {
+//        this.membersService.deleteById(id);
+//        return GlobalApiResponse.
+//                <String>builder()
+//                .statusCode(200)
+//                .data("ok")
+//                .message("Data deleted successfully!")
+//                .build();
+//
+//
+//    }
+
+    @DeleteMapping("/delete/{id}")
+    public GlobalApiResponse<String> deleteMember(@PathVariable Integer id) {
+        this.membersService.deleteMemberAndDue(id);
         return GlobalApiResponse.
                 <String>builder()
                 .statusCode(200)
                 .data("ok")
-                .message("Data deleted successfully!")
+                .message("Data deleted successfully")
                 .build();
-
-
     }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<GlobalApiResponse<String>> updateData(@PathVariable("id") Integer id, @RequestBody MembersPojo membersPojo) {
         Optional<Members> existingMember = membersService.findById(id);
@@ -104,6 +116,32 @@ public class MembersController {
                             .build()
             );
         }
+    }
+
+    @GetMapping("/count/basic")
+    public ResponseEntity<GlobalApiResponse<Long>> countBasicMembers() {
+        Long count = membersService.countBasicMembers();
+
+        return ResponseEntity.ok(
+                GlobalApiResponse.<Long>builder()
+                        .data(count)
+                        .statusCode(200)
+                        .message("Count retrieved successfully!")
+                        .build()
+        );
+    }
+
+    @GetMapping("/count/premium")
+    public ResponseEntity<GlobalApiResponse<Long>> countPremiumMembers() {
+        Long count = membersService.countPremiumMembers();
+
+        return ResponseEntity.ok(
+                GlobalApiResponse.<Long>builder()
+                        .data(count)
+                        .statusCode(200)
+                        .message("Count retrieved successfully!")
+                        .build()
+        );
     }
 
 

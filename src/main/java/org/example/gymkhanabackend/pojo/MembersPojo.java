@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 public class MembersPojo {
-    private Integer membersId;
+    private Integer memberId;
     private String name;
     private String email;
     private String phoneNumber;

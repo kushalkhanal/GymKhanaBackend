@@ -12,9 +12,18 @@ public interface MembersService {
     void saveData(MembersPojo membersPojo);
     List<Members> getAll();
 
-    void deleteById(Integer id);
+//    void deleteById(Integer id);
+    void deleteMemberAndDue(Integer memberId);
+
     Optional<Members> findById(Integer id);
 
     void update(Integer id, MembersPojo membersPojo);
+
+    void copyMembersToDue();
+
+    String getMembershipTypeName(Integer memberId);
+
+    Long countBasicMembers();
+    Long countPremiumMembers();
 
 }
