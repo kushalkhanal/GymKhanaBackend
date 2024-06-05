@@ -143,6 +143,19 @@ public class MembersController {
                         .build()
         );
     }
+    @GetMapping("/count/standard")
+    public ResponseEntity<GlobalApiResponse<Long>> countStandardMembers() {
+        Long count = membersService.countStandardMembers();
+
+        return ResponseEntity.ok(
+                GlobalApiResponse.<Long>builder()
+                        .data(count)
+                        .statusCode(200)
+                        .message("Count retrieved successfully!")
+                        .build()
+        );
+    }
+
 
 
 }

@@ -90,6 +90,10 @@ public class MembersImpl implements MembersService {
     public Long countBasicMembers() {
         return membersRepo.countByMembershipType_MembershipTypeId(1);
     }
+    @Override
+    public Long countStandardMembers() {
+        return membersRepo.countByMembershipType_MembershipTypeId(3);
+    }
 
     @Override
     public Long countPremiumMembers() {

@@ -25,5 +25,6 @@ public interface MembersService {
 
     Long countBasicMembers();
     Long countPremiumMembers();
+    Long countStandardMembers();
 
 }
